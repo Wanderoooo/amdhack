@@ -13,19 +13,19 @@ app = firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
-def test(): 
-    try: 
+# def test(): 
+#     try: 
 
-        team = ["winstang","alissguo","brianli2","bowzheng"]
-        for name in team:
-            doc_ref = db.collection("users").document(name)
-            doc_ref.set({"Points": 0, "Fixes": 0, "AverageFixSeverity": 0 , "FalsePositivesFixed": 0})
+#         team = ["winstang","alissguo","brianli2","bowzheng"]
+#         for name in team:
+#             doc_ref = db.collection("users").document(name)
+#             doc_ref.set({"Points": 0, "Fixes": 0, "AverageFixSeverity": 0 , "FalsePositivesFixed": 0})
 
-        users_ref = db.collection("users")
-        docs = users_ref.stream()
+#         users_ref = db.collection("users")
+#         docs = users_ref.stream()
 
-    except Exception as e:
-        print(f"fhkjsdhfjsd")
+#     except Exception as e:
+#         print(f"fhkjsdhfjsd")
 
 def read_sarif(path):
     with open(path, 'r') as file:
@@ -45,7 +45,8 @@ def store_sarif(data, issues):
         vulnerability_data = {
             'name': name,
             'description': full_descr,
-            'severity': severity
+            'severity': severity,
+            'bid': 0
         }
         doc_ref.set(vulnerability_data) 
 
@@ -64,4 +65,4 @@ def process_files(folder_path):
 if __name__ == "__main__":
     folder_path = 'C:\\amdhack_sarifs'
     process_files(folder_path)
-    test()
+    #test()
