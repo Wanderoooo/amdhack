@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/kaban-board/node_modules
+/Leader-Board-React
 /.pnp
 .pnp.js
 
