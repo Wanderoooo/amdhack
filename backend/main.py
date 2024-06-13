@@ -65,11 +65,26 @@ async def get_issue_data(commit_hash: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/update_user_stats_and_issue/{user_id}/")
-async def update_user_stats():
+@app.get("/users/points")
+async def get_points():
     #get users current points, calculate points after fix, mark issue as fixed if determined as fixed
     #points ideas: extra points for fixing issues faster, first fix, daily streak 
-    return {"message": "Hel"}
+    try:
+        users_ref = db.collection('users')
+        users_docs = users_ref.stream()
+
+        users_points = []
+        for doc in users_docs:
+            user_data = doc.to_dict()
+            user_points.append({
+                'id': doc.id,
+                'points': user_data.get('points')
+            })
+
+        return {"users": users_points}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.delete("/boards/{commit_hash}/{board_id}")
 async def remove_board(commit_hash: str,board_id: str):

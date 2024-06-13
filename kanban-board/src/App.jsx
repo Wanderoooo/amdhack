@@ -189,6 +189,20 @@ function App() {
     setData(tempBoards);
   };
 
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/users/points");
+        setUsers(response.data.users);
+      } catch (error) { 
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchUsers();
+    }, []);
+
   useEffect(() => {
     localStorage.setItem("kanban-board", JSON.stringify(data));
   }, [data]);
