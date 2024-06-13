@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
   Calendar,
+  Camera,
   Check,
   CheckSquare,
   Clock,
   CreditCard,
   List,
+  PenTool,
   Plus,
   Tag,
   Trash,
@@ -17,6 +19,7 @@ import Modal from "../../Modal/Modal";
 import "./CardDetails.css";
 import { v4 as uuidv4 } from "uuid";
 import Label from "../../Label/Label";
+import Description from "../../Description/Description";
 
 export default function CardDetails(props) {
   const colors = ["#61bd4f", "#f2d600", "#ff9f1a", "#eb5a46", "#c377e0"];
@@ -25,6 +28,7 @@ export default function CardDetails(props) {
   const [input, setInput] = useState(false);
   const [text, setText] = useState(values.title);
   const [labelShow, setLabelShow] = useState(false);
+  const [descShow, setDescShow] = useState(false);
   const Input = (props) => {
     return (
       <div className="">
@@ -84,6 +88,11 @@ export default function CardDetails(props) {
       ...values,
       tags: tempTag,
     });
+  };
+
+  
+  const addDesc = (desc) => {
+    setValues({ ...values, desc: desc });
   };
 
   const addTag = (value, color) => {
@@ -168,6 +177,17 @@ export default function CardDetails(props) {
                   </span>
                 )}
               </div>
+              <div className="row">
+              <div className="col-8">
+                  <h6 className="text-justify">Description</h6>
+                  <div
+                className="d-flex label__color flex-wrap"
+                style={{ width: "500px", paddingRight: "10px" }}
+              >
+                  <p>{props.card.desc ?? <i style={{marginLeft: '12px'}}>No Description</i>}</p>
+                </div>
+                </div>
+                </div>
               <div className="check__list mt-2">
                 <div className="d-flex align-items-end  justify-content-between">
                   <div className="d-flex align-items-center gap-2">
@@ -243,7 +263,7 @@ export default function CardDetails(props) {
             <div className="col-4">
               <h6>Add to card</h6>
               <div className="d-flex card__action__btn flex-column gap-2">
-                <button onClick={() => setLabelShow(true)}>
+                <button onClick={() => setLabelShow(!labelShow)}>
                   <span className="icon__sm">
                     <Tag />
                   </span>
@@ -253,6 +273,20 @@ export default function CardDetails(props) {
                   <Label
                     color={colors}
                     addTag={addTag}
+                    tags={values.tags}
+                    onClose={setLabelShow}
+                  />
+                )}
+                <button onClick={() => setDescShow(!descShow)}>
+                  <span className="icon__sm">
+                    <PenTool />
+                  </span>
+                  Add Description
+                </button>
+                {descShow && (
+                  <Description
+                    color={colors}
+                    addDesc={addDesc}
                     tags={values.tags}
                     onClose={setLabelShow}
                   />

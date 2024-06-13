@@ -79,6 +79,7 @@ export default function Board(props) {
                 index={index}
                 key={items.id}
                 title={items.title}
+                desc={items.desc}
                 tags={items.tags}
                 updateCard={props.updateCard}
                 removeCard={props.removeCard}

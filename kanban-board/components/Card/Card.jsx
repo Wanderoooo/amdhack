@@ -38,7 +38,7 @@ const Card = (props) => {
             ref={provided.innerRef}
           >
             <div className="card__text">
-              <p>{props.title}</p>
+              <h5>{props.title}</h5>
               <MoreHorizontal
                 className="car__more"
                 onClick={() => {
@@ -51,6 +51,10 @@ const Card = (props) => {
               {props.tags?.map((item, index) => (
                 <Tag key={index} tagName={item.tagName} color={item.color} />
               ))}
+            </div>
+
+            <div>
+              <p>{props.desc}</p>
             </div>
 
             <div className="card__footer">
