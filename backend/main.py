@@ -1,5 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+cred = credentials.Certificate('path/to/your/serviceAccountKey.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
 app = FastAPI()
 
 app.add_middleware(
@@ -39,32 +47,11 @@ async def get_issue_data(commit_hash: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/update_user_stats_and_issue/{user_id}")
+@app.post("/update_user_stats_and_issue/{user_id}/")
 async def update_user_stats():
     #get users current points, calculate points after fix, mark issue as fixed if determined as fixed
     #points ideas: extra points for fixing issues faster, first fix, daily streak 
     return {"message": "Hel"}
-
-import firebase_admin
-from firebase_admin import credentials, firestore
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-
-# Initialize Firebase Admin
-cred = credentials.Certificate('path/to/your/serviceAccountKey.json')
-firebase_admin.initialize_app(cred)
-db = firestore.client()
-
-app = FastAPI()
-
-# Enable CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
-)
 
 @app.delete("/boards/{commit_hash}/{board_id}")
 async def remove_board(commit_hash: str,board_id: str):
