@@ -119,32 +119,54 @@ function App() {
   }
 
   useEffect(() => {
-    const fetchIssues = async (commitHash) => {
-      try {
-        const response = await axios.get(`http://127.0.0.1:8000/commits/${commitHash}`);
-        const { issues } = response.data;
+    const getCommitHashes = async() => {
+        try {
+        const response = await axios.get(`http://127.0.0.1:8000/get_commits`);
+        const { commits } = response.data;
 
-        for (const issueId in issues) {
-          const deps = issues[issueId];
-          deps.forEach(dep => {
-            addFullCard(
-              dep.name + " | Severity: " + String(dep.severity), // title
-              [],       // tags (adjust if there are tags in the data)
-              issueId,  // task (using issueId as task)
-              dep.description, // add date
-              '',       // assignee (adjust if there is an assignee in the data)
-              dep.bid   // bid 
-            );
-          });
-        }
+        // if there is no board yet, make a board
+        const boardId = 0;
+        // add cards to board with title = commit hash
+        commits.forEach(hash => {
+          addCard(
+            hash.id, // title
+            boardId
+          )
+        })
       } catch (error) {
-        console.error('Error fetching issues:', error);
+        console.error('Error fetching commit hashes:', error);
       }
-    };
+    }
+    getCommitHashes();
+  }, []);
+
+  // useEffect(() => {
+  //   const fetchIssues = async (commitHash) => {
+  //     try {
+  //       const response = await axios.get(`http://127.0.0.1:8000/commits/${commitHash}`);
+  //       const { issues } = response.data;
+
+  //       for (const issueId in issues) {
+  //         const deps = issues[issueId];
+  //         deps.forEach(dep => {
+  //           addFullCard(
+  //             dep.name + " | Severity: " + String(dep.severity), // title
+  //             [],       // tags (adjust if there are tags in the data)
+  //             issueId,  // task (using issueId as task)
+  //             dep.description, // add date
+  //             '',       // assignee (adjust if there is an assignee in the data)
+  //             dep.bid   // bid 
+  //           );
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching issues:', error);
+  //     }
+  //   };
 
     // Call fetchIssues with the desired commit hash
-    fetchIssues(commitHash);
-  }, [commitHash]);
+  //   fetchIssues(commitHash);
+  // }, [commitHash]);
 
   const removeCard = (boardId, cardId) => {
     const index = data.findIndex((item) => item.id === boardId);
@@ -195,6 +217,20 @@ function App() {
     console.log(tempBoards);
     setData(tempBoards);
   };
+
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/users/points");
+        setUsers(response.data.users);
+      } catch (error) { 
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchUsers();
+    }, []);
 
   useEffect(() => {
     localStorage.setItem("kanban-board", JSON.stringify(data));

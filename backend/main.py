@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 import firebase_admin
@@ -12,7 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3001"],
     allow_credentials = True,
     allow_methods = ["*"],
     allow_headers = ["*"]
@@ -21,6 +21,21 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+@app.get('/get_commits')
+async def get_commit_hashes():
+    try: 
+        commit_ref = db.collection('commits')
+        commit_doc = commit_ref.stream()
+
+        commit_dic = []
+        for doc in commit_doc:
+            commit_dic.append({**doc.to_dict(), 'id':doc.id})
+        print(commit_dic)
+        return {"commits": commit_dic}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/commits/{commit_hash}")
 async def get_issue_data(commit_hash: str):
@@ -40,6 +55,7 @@ async def get_issue_data(commit_hash: str):
             deps_data = []
             for dep in deps_docs:
                 for dep_doc in dep.stream():
+
                     dep_data = dep_doc.to_dict()
                     deps_data.append(dep_data)
 
@@ -49,11 +65,26 @@ async def get_issue_data(commit_hash: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/update_user_stats_and_issue/{user_id}/")
-async def update_user_stats():
+@app.get("/users/points")
+async def get_points():
     #get users current points, calculate points after fix, mark issue as fixed if determined as fixed
     #points ideas: extra points for fixing issues faster, first fix, daily streak 
-    return {"message": "Hel"}
+    try:
+        users_ref = db.collection('users')
+        users_docs = users_ref.stream()
+
+        users_points = []
+        for doc in users_docs:
+            user_data = doc.to_dict()
+            user_points.append({
+                'id': doc.id,
+                'points': user_data.get('points')
+            })
+
+        return {"users": users_points}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.delete("/boards/{commit_hash}/{board_id}")
 async def remove_board(commit_hash: str,board_id: str):
