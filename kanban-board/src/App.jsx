@@ -80,6 +80,8 @@ function App() {
     setData(tempData);
   }
 
+  const [commitHash, setCommitHash] = useState('');
+
   useEffect(() => {
     const fetchIssues = async (commitHash) => {
       try {
