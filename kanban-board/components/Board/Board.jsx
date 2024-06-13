@@ -84,6 +84,7 @@ export default function Board(props) {
                 updateCard={props.updateCard}
                 removeCard={props.removeCard}
                 card={items}
+                logo={items.logo}
               />
             ))}
             {provided.placeholder}

@@ -47,6 +47,16 @@ const Card = (props) => {
               />
             </div>
 
+            {/* <div className="card__text">
+              <p>{new Date().toString}</p>
+            </div> */}
+
+            <div>
+              {props.logo &&
+              <img src={props.logo} style={{height: '22px'}} alt='profile pic' title={props.owner ?? 'Unassigned'}/>
+              }
+            </div>
+
             <div className="card__tags">
               {props.tags?.map((item, index) => (
                 <Tag key={index} tagName={item.tagName} color={item.color} />

@@ -10,7 +10,6 @@ export default function (props) {
 
   const isColorUsed = (color) => {
     const isFound = props.tags.find((item) => item.color === color);
-
     return isFound ? true : false;
   };
 

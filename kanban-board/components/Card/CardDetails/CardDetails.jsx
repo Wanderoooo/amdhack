@@ -14,6 +14,7 @@ import {
   Type,
   X,
 } from "react-feather";
+import { Select } from 'antd';
 import Editable from "../../Editable/Editable";
 import Modal from "../../Modal/Modal";
 import "./CardDetails.css";
@@ -22,13 +23,18 @@ import Label from "../../Label/Label";
 import Description from "../../Description/Description";
 
 export default function CardDetails(props) {
+  const options = [{label: 'lucy', value: 'Lucy'}, {label: 'John Doe', value: 'John Doe'}, {label: 'Jane Doe', value: 'Jane Doe'}]
   const colors = ["#61bd4f", "#f2d600", "#ff9f1a", "#eb5a46", "#c377e0"];
-
   const [values, setValues] = useState({ ...props.card });
   const [input, setInput] = useState(false);
   const [text, setText] = useState(values.title);
   const [labelShow, setLabelShow] = useState(false);
   const [descShow, setDescShow] = useState(false);
+  const onChange = (value) => {
+    setValues({...values, owner: value})
+  };
+  const filterOption = (input, option) =>
+    (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
   const Input = (props) => {
     return (
       <div className="">
@@ -146,6 +152,13 @@ export default function CardDetails(props) {
               </div>
             </div>
           </div>
+          <div>
+          {props.card.logo &&
+          <div style={{display: 'flex', flexDirection: 'row'}}>
+              <img src={props.card.logo} style={{height: '22px', marginRight: '22px'}} title={props.owner ?? 'Unassigned'}/>
+<p>{props.card.owner}</p>
+</div>}
+</div>
           <div className="row">
             <div className="col-8">
               <h6 className="text-justify">Label</h6>
@@ -263,7 +276,18 @@ export default function CardDetails(props) {
             <div className="col-4">
               <h6>Add to card</h6>
               <div className="d-flex card__action__btn flex-column gap-2">
-                <button onClick={() => setLabelShow(!labelShow)}>
+              <Select
+                showSearch
+                placeholder="Select an assignee"
+                optionFilterProp="children"
+                onChange={onChange}
+                filterOption={filterOption}
+                options={options}
+                defaultValue={props.card.owner}
+              />
+                <button onClick={() => {
+                  setLabelShow(!labelShow)
+                  setDescShow(false)}}>
                   <span className="icon__sm">
                     <Tag />
                   </span>
@@ -277,7 +301,8 @@ export default function CardDetails(props) {
                     onClose={setLabelShow}
                   />
                 )}
-                <button onClick={() => setDescShow(!descShow)}>
+                <button onClick={() => {setDescShow(!descShow)
+                  setLabelShow(false)}}>
                   <span className="icon__sm">
                     <PenTool />
                   </span>
@@ -291,12 +316,6 @@ export default function CardDetails(props) {
                     onClose={setLabelShow}
                   />
                 )}
-                <button>
-                  <span className="icon__sm">
-                    <Clock />
-                  </span>
-                  Date
-                </button>
 
                 <button onClick={() => props.removeCard(props.bid, values.id)}>
                   <span className="icon__sm">
