@@ -21,6 +21,7 @@ import "./CardDetails.css";
 import { v4 as uuidv4 } from "uuid";
 import Label from "../../Label/Label";
 import Description from "../../Description/Description";
+import logo from '../../../src/Images/html.png'
 
 export default function CardDetails(props) {
   const options = [{label: 'lucy', value: 'Lucy'}, {label: 'John Doe', value: 'John Doe'}, {label: 'Jane Doe', value: 'Jane Doe'}]
@@ -31,7 +32,7 @@ export default function CardDetails(props) {
   const [labelShow, setLabelShow] = useState(false);
   const [descShow, setDescShow] = useState(false);
   const onChange = (value) => {
-    setValues({...values, owner: value})
+    setValues({...values, owner: {...values.owner, name: value}})
   };
   const filterOption = (input, option) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
@@ -54,6 +55,7 @@ export default function CardDetails(props) {
       id: uuidv4(),
       task: value,
       completed: false,
+      points: 2,
     });
     setValues({ ...values });
   };
@@ -73,6 +75,21 @@ export default function CardDetails(props) {
   const updateTask = (id) => {
     const taskIndex = values.task.findIndex((item) => item.id === id);
     values.task[taskIndex].completed = !values.task[taskIndex].completed;
+    console.log("values.owner", values.owner)
+    const updateLeaderboard = {...props.leaderboard}
+    if (values.owner.name !== 'Unassigned' && values.task[taskIndex].completed) {
+      if (updateLeaderboard[values.owner.name]) {
+        updateLeaderboard[values.owner.name] = updateLeaderboard[values.owner.name] + values.task[taskIndex].points;
+      } else {
+        updateLeaderboard[values.owner.name] = values.task[taskIndex].points;
+      }
+      const entries = Object.entries(updateLeaderboard);
+      const sortedEntries = entries.sort((a, b) => b[1] - a[1]);
+      const sortedObj = Object.fromEntries(sortedEntries);
+
+      console.log("sortedObj", sortedObj)
+      props.setLeaderboard(sortedObj)
+    }
     setValues({ ...values });
   };
   const updateTitle = (value) => {
@@ -153,10 +170,10 @@ export default function CardDetails(props) {
             </div>
           </div>
           <div>
-          {props.card.logo &&
+          {logo &&
           <div style={{display: 'flex', flexDirection: 'row'}}>
-              <img src={props.card.logo} style={{height: '22px', marginRight: '22px'}} title={props.owner ?? 'Unassigned'}/>
-<p>{props.card.owner}</p>
+              <img src={logo} style={{height: '22px', marginRight: '22px'}} title={props.owner?.name ?? 'Unassigned'}/>
+<p>{props.card.owner?.name}</p>
 </div>}
 </div>
           <div className="row">
@@ -170,7 +187,7 @@ export default function CardDetails(props) {
                   values.tags.map((item) => (
                     <span
                       className="d-flex justify-content-between align-items-center gap-2"
-                      style={{ backgroundColor: item.color }}
+                      style={{ backgroundColor: item.color, marginBottom: "10px"}}
                     >
                       {item.tagName.length > 10
                         ? item.tagName.slice(0, 6) + "..."
@@ -283,7 +300,7 @@ export default function CardDetails(props) {
                 onChange={onChange}
                 filterOption={filterOption}
                 options={options}
-                defaultValue={props.card.owner}
+                defaultValue={values.owner.name}
               />
                 <button onClick={() => {
                   setLabelShow(!labelShow)

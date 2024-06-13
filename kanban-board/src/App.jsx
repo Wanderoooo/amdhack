@@ -11,14 +11,46 @@ import "../bootstrap.css";
 import LeaderBoard from "./Components/LeaderBoard/LeaderBoard";
 import Wave from 'react-wavify'
 import logo from './vulsquash2.png'
+import amd from './amd.png'
 import axios from 'axios'
 
 function App() {
+
+  // placeholder, to be linked to completed apis
+  const defaults = [
+    {
+      id: 0,
+      boardName: 'CodeQL reports',
+      card: [],
+    },
+
+    {
+      id: 1,
+      boardName: 'False Positives',
+      card: [],
+    },
+
+    {
+      id: 2,
+      boardName: 'In Progress',
+      card: [],
+    },
+
+    {
+      id: 3,
+      boardName: 'Completed',
+      card: [],
+    },
+
+  ]
+
   const [data, setData] = useState(
     localStorage.getItem("kanban-board")
       ? JSON.parse(localStorage.getItem("kanban-board"))
-      : []
+      : defaults
   );
+
+  const [leaderboard, setLeaderboard] = useState([])
 
   const defaultDark = window.matchMedia(
     "(prefers-colors-scheme: dark)"
@@ -61,6 +93,10 @@ function App() {
       title: title,
       tags: [],
       task: [],
+      owner: {
+        name: "Unassigned",
+        points: 0,
+      }
     });
     setData(tempData);
   };
@@ -129,18 +165,11 @@ function App() {
     setData(tempData);
   };
 
-  const removeBoard = async (commitHash, bid) => {
-    try {
-      const response = await axios.delete(`http://127.0.0.1:8000/boards/${commitHash}/${bid}`);
-      console.log(response.data.message);
-
-      const tempData = [...data];
-      const index = data.findIndex((item) => item.id === bid);
-      tempData.splice(index, 1);
-      setData(tempData);
-    } catch (error) {
-      console.error("Error removing board:", error);
-    }
+  const removeBoard = (bid) => {
+    const tempData = [...data];
+    const index = data.findIndex((item) => item.id === bid);
+    tempData.splice(index, 1);
+    setData(tempData);
   };
 
   const onDragEnd = (result) => {
@@ -171,6 +200,10 @@ function App() {
     localStorage.setItem("kanban-board", JSON.stringify(data));
   }, [data]);
 
+  useEffect(() => {
+    console.log("leadb", leaderboard)
+  }, [leaderboard]);
+
   return (
     <div>
     <div style={{ backgroundColor: '#212121', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -185,20 +218,15 @@ function App() {
           </mask>
         </defs>
       </Wave>
+      <div>
     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: '150px', marginTop: '50px' }}>
         <img  className="name" src={logo} style={{ width: '800px', height: '500px' }} />
       </div>
-    <Wave mask="url(#mask)" fill="#212121" >
-        <defs>
-          <linearGradient id="gradient" gradientTransform="rotate(90)">
-            <stop offset="0" stopColor="black" />
-            <stop offset="0.5" stopColor="white" />
-          </linearGradient>
-          <mask id="mask">
-            <rect x="0" y="0" width="2000" height="300" fill="url(#gradient)" />
-          </mask>
-        </defs>
-      </Wave>
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+      <h4>An gamified vulnerability squasher for </h4>
+      <img src={amd} style={{ width: '200px', height: '200px' }} />
+      </div>
+      </div>
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="App" data-theme={theme}>
         <div className="app_outer">
@@ -214,6 +242,8 @@ function App() {
                 removeCard={removeCard}
                 removeBoard={removeBoard}
                 updateCard={updateCard}
+                setLeaderboard={setLeaderboard}
+                leaderboard={leaderboard}
               />
             ))}
             <Editable
@@ -228,7 +258,7 @@ function App() {
       </div>
     </DragDropContext>
     </div>
-    <LeaderBoard/>
+    <LeaderBoard leaderboard={leaderboard}/>
     </div>
   );
 }

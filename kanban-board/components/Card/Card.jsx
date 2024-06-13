@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { Calendar, CheckSquare, Clock, MoreHorizontal } from "react-feather";
 import Dropdown from "../Dropdown/Dropdown";
 import Modal from "../Modal/Modal";
 import Tag from "../Tags/Tag";
+import logo from '../../src/Images/html.png'
 import "./Card.css";
 import CardDetails from "./CardDetails/CardDetails";
 const Card = (props) => {
   const [dropdown, setDropdown] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+
+  useEffect(() => {
+    console.log(props.card)
+  }, [props])
 
   return (
     <Draggable
@@ -25,6 +30,8 @@ const Card = (props) => {
               card={props.card}
               bid={props.bid}
               removeCard={props.removeCard}
+              setLeaderboard={props.setLeaderboard}
+              leaderboard={props.leaderboard}
             />
           )}
 
@@ -47,14 +54,9 @@ const Card = (props) => {
               />
             </div>
 
-            {/* <div className="card__text">
-              <p>{new Date().toString}</p>
-            </div> */}
-
-            <div>
-              {props.logo &&
-              <img src={props.logo} style={{height: '22px'}} alt='profile pic' title={props.owner ?? 'Unassigned'}/>
-              }
+            <div style={{display: 'flex', flexDirection: 'row'}}>
+              <img src={logo} style={{height: '22px'}} alt='profile pic'/>
+              <i style={{marginLeft: '10px'}}>{props.card.owner.name}</i>
             </div>
 
             <div className="card__tags">

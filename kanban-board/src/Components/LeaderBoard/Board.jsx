@@ -1,61 +1,41 @@
 import React from 'react'
 import '../style.css'
-import HTML from "../../Images/html.png";
 import Images from './Images';
+import logo from '../../Images/css.png'
 
-const Board = ({scores,onIncrement,onDecrement}) => {
+const Board = ({scores,onIncrement,onDecrement, lb}) => {
+  const lbarray = Object.entries(lb)
     return (
         <div>
-             {scores.map((value, index) => {
+             {lbarray.map((value) => {
+              console.log(value);
             return (
               <>
                 <div
                   className="grid row"
-                  key={value.id}
+                  key={value[0]}
                   style={{ margin: "50px 0px" }}
                 >
                   <div className="details-wrap">
-                    <div className="intern-name">{value.studentName}</div>
+                    <div className="intern-name">{value[0]}</div>
                     <div className="badge-wrap">
                       <div className="badge .badge-6377">
                           {
                               Images.map((value,index)=>{
                                   
                                     return (
-                                        <img src={value.image} alt="" key={index} />
+                                        <img src={logo} alt="" key={index} />
                                         
                                           )
                                   
                                 
                               })
                           }
-                        {/* <img src={HTML} alt="" />
-                        <img src={HTML} alt="" />
-                        <img src={HTML} alt="" />
-                        <img src={HTML} alt="" /> */}
                       </div>
                     </div>
-                    <div className="university">{value.studentUniversity}</div>
-                    <div className="scroing">
-                      <span className="increment-decrement-span">
-                        Increment/Decrement The Score
-                      </span>
-                      <div className="increase-score" >
-                          
-                        <button onClick={() => onIncrement(value.id)} >+</button>
-                      </div>
-                      <div className="decrease-score">
-                        <button onClick={()=>onDecrement(value.id)}>-</button>
-                      </div>
-                    </div>
+                    <div className="university">{'Software Developers'}</div>
                   </div>
-                  {/* {score == 0 ? 
-          <div className="score">{value.studentScore}</div>
-          
-          : <div className="score">{score + value.studentScore}</div> 
-          } */}
-                  
-                  <div className="score">{value.studentScore}</div>
+                  <div className="score">{value[1]}</div>
                 </div>
               </>
             );

@@ -2,9 +2,8 @@ import React,{useState} from 'react'
 import '../style.css'
 import Board from './Board'
 import Data from './Data'
-const LeaderBoard = () => {
+const LeaderBoard = ({ leaderboard: lb }) => {
     const [scores, setScores] = useState(Data);
-
     const onIncrement=(studentId)=>{
      const updatedScore=scores.map((score)=>{
          if(score.id===studentId){
@@ -33,9 +32,8 @@ const LeaderBoard = () => {
           <div class="wrap">
             <h2 class="title">Leaderboard</h2>
             <p class="sub-title">
-              Interns Progression System uses performance tiers to track your
-              growth. Along the way, you’ll earn badges for your achievements
-              and compete for glory on live leaderboard.
+            Progression System uses performance tiers to track vulnerability solutions. Along the way, you’ll earn badges for your achievements
+            and compete on the live leaderboard.
             </p>
           </div>
         </div>
@@ -48,7 +46,7 @@ const LeaderBoard = () => {
               <div className="th">Score</div>
             </div>
           </div>
-            <Board scores={scores} onIncrement={onIncrement} onDecrement={onDecrement} />
+            <Board scores={scores} onIncrement={onIncrement} onDecrement={onDecrement} lb={lb} />
          
         </div>
       </div>

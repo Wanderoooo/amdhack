@@ -25,9 +25,8 @@ const Students = (props) => {
           <div class="wrap">
             <h2 class="title">Leaderboard</h2>
             <p class="sub-title">
-              Interns Progression System uses performance tiers to track your
-              growth. Along the way, you’ll earn badges for your achievements
-              and compete for glory on live leaderboard.
+              Progression System uses performance tiers to track vulnerability solutions. Along the way, you’ll earn badges for your achievements
+              and compete on the live leaderboard.
             </p>
           </div>
         </div>

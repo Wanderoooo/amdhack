@@ -3,9 +3,9 @@ import "./Tag.css";
 const Tag = (props) => {
   return (
     // <div className='tag'>
-    <sapn className="tag" style={{ backgroundColor: `${props?.color}` }}>
+    <span className="tag" style={{ backgroundColor: `${props?.color}`}}>
       {props?.tagName}
-    </sapn>
+    </span>
     // </div>
   );
 };

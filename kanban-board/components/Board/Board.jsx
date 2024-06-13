@@ -85,6 +85,8 @@ export default function Board(props) {
                 removeCard={props.removeCard}
                 card={items}
                 logo={items.logo}
+                setLeaderboard={props.setLeaderboard}
+                leaderboard={props.leaderboard}
               />
             ))}
             {provided.placeholder}
