@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-cred = credentials.Certificate('path/to/your/serviceAccountKey.json')
+cred = credentials.Certificate('C:\\Users\\winstang\\amdhack-58ad0-firebase-adminsdk-dpnss-89da1a3d8c.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -22,11 +22,27 @@ app.add_middleware(
 async def root():
     return {"message": "Hello World"}
 
+@app.get('/get_commits')
+async def get_commit_hashes():
+    try: 
+        commit_ref = db.collection('commits')
+        commit_doc = commit_ref.get()
+
+        commit_dic = commit_doc.to_array()
+
+        return {"commits": commit_dic}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/commits/{commit_hash}")
 async def get_issue_data(commit_hash: str):
     try: 
         commit_ref = db.collection('commits').document(commit_hash)
         commit_doc = commit_ref.get()
+
+        if not commit_doc.exists:
+            raise HTTPException(status_code=404, detail="Commit not found")
 
         issues_ref = commit_ref.collection('issues')
         issues_docs = issues_ref.stream()
@@ -34,7 +50,6 @@ async def get_issue_data(commit_hash: str):
         issues_data = {}
         for issue in issues_docs:
             deps_docs = issues_ref.document(issue.id).collections()
-
             deps_data = []
             for dep in deps_docs:
                 for dep_doc in dep.stream():
@@ -56,20 +71,25 @@ async def update_user_stats():
 @app.delete("/boards/{commit_hash}/{board_id}")
 async def remove_board(commit_hash: str,board_id: str):
     try:
+
         commit_ref = db.collection('commits').document(commit_hash)
         commit_doc = commit_ref.get()
+
         if not commit_doc.exists:
             raise HTTPException(status_code=404, detail="Commit not found")
-
-        deps_ref = commit_ref.collections()
-        for dep in deps_ref:
-            dep_docs = dep.stream()
-            for dep_doc in dep_docs:
-                dep_data = dep_doc.to_dict()
-                if dep_data.get('biD') == board_id:
-                    # Delete the matching issue document
-                    dep_doc.reference.delete()
-                    return {"message": "Issue board removed successfully"}
+        
+        issues_ref = commit_ref.collection('issues')
+        issues_docs = issues_ref.stream()
+    
+        for issue in issues_docs:
+            deps_docs = issues_ref.document(issue.id).collections()
+            for dep in deps_docs:
+                for dep_doc in dep.stream():
+                    dep_data = dep_doc.to_dict()
+                    if dep_data.get('bid') == board_id:
+                        # Delete the matching issue document
+                        dep_doc.reference.delete()
+                        return {"message": "Issue board removed successfully"}
 
         raise HTTPException(status_code=404, detail="Board ID not found within the specified commit hash")
     except Exception as e:

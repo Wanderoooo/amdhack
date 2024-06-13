@@ -65,6 +65,8 @@ function App() {
     setData(tempData);
   };
 
+  const [commitHash, setCommitHash] = useState('');
+
   const addFullCard = (title, tags, task, desc, assignee, bid) => {
     // bid is boardId
     const index = data.findIndex((item) => item.id === bid);
@@ -81,6 +83,27 @@ function App() {
   }
 
   const [commitHash, setCommitHash] = useState('');
+
+  useEffect(() => {
+    const getCommitHashes = async() => {
+        try {
+        const response = await axios.get(`http://127.0.0.1:8000/get_commits`);
+        const { hashes } = response.data;
+
+        // if there is no board yet, make a board
+        const boardId = 0;
+        // add cards to board with title = commit hash
+        hashes.forEach(hash => {
+          addCard(
+            hash, // title
+            boardId
+          )
+        })
+      } catch (error) {
+        console.error('Error fetching commit hashes:', error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const fetchIssues = async (commitHash) => {
@@ -129,11 +152,18 @@ function App() {
     setData(tempData);
   };
 
-  const removeBoard = (bid) => {
-    const tempData = [...data];
-    const index = data.findIndex((item) => item.id === bid);
-    tempData.splice(index, 1);
-    setData(tempData);
+  const removeBoard = async (commitHash, bid) => {
+    try {
+      const response = await axios.delete(`http://127.0.0.1:8000/boards/${commitHash}/${bid}`);
+      console.log(response.data.message);
+
+      const tempData = [...data];
+      const index = data.findIndex((item) => item.id === bid);
+      tempData.splice(index, 1);
+      setData(tempData);
+    } catch (error) {
+      console.error("Error removing board:", error);
+    }
   };
 
   const onDragEnd = (result) => {
