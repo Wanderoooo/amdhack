@@ -24,12 +24,8 @@ function App() {
   ).matches;
   const [theme, setTheme] = useLocalStorage(
     "theme",
-    defaultDark ? "dark" : "light"
+    "dark"
   );
-
-  const switchTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
 
   const setName = (title, bid) => {
     const index = data.findIndex((item) => item.id === bid);
@@ -125,11 +121,11 @@ function App() {
   return (
     <div>
     <div style={{ backgroundColor: '#212121', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-    <Wave mask="url(#mask)" fill="#212121" >
+    <Wave mask="url(#mask)" fill="#ADD8E6" >
         <defs>
           <linearGradient id="gradient" gradientTransform="rotate(90)">
-            <stop offset="0" stopColor="black" />
-            <stop offset="0.5" stopColor="white" />
+            <stop offset="0" stopColor="white" />
+            <stop offset="0.5" stopColor="black" />
           </linearGradient>
           <mask id="mask">
             <rect x="0" y="0" width="2000" height="300" fill="url(#gradient)" />
@@ -152,7 +148,6 @@ function App() {
       </Wave>
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="App" data-theme={theme}>
-        <Navbar switchTheme={switchTheme} />
         <div className="app_outer">
           <div className="app_boards">
             {data.map((item) => (
