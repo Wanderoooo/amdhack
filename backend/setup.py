@@ -24,9 +24,6 @@ def test():
         users_ref = db.collection("users")
         docs = users_ref.stream()
 
-        for doc in docs:
-            print(f"{doc.id} => {doc.to_dict()}")
-
     except Exception as e:
         print(f"fhkjsdhfjsd")
 
@@ -35,7 +32,7 @@ def read_sarif(path):
         data = json.load(file)
         return data
 
-def store_sarif(data):
+def store_sarif(data, issues):
     pattern = re.compile(r'[^a-zA-Z0-9]')
    
     rules = data['runs'][0]['tool']['driver']['rules']
@@ -44,8 +41,7 @@ def store_sarif(data):
         name = re.sub(pattern, '', name)
         full_descr = rule.get('fullDescription', {}).get('text')
         severity = rule.get('properties', {}).get('security-severity')
-        print(severity)
-        doc_ref = db.collection('issues').document(name)
+        doc_ref = issues.collection('issues').document(name)
         vulnerability_data = {
             'name': name,
             'description': full_descr,
@@ -60,8 +56,10 @@ def process_files(folder_path):
 
     for file in sarif_files:
         file_path = os.path.join(folder_path, file)
+        file = re.search(r'-(.*?)-', file).group(1)
+        issues = db.collection('commit').document(file)
         data = read_sarif(file_path)
-        store_sarif(data)
+        store_sarif(data, issues)
 
 if __name__ == "__main__":
     folder_path = 'C:\\amdhack_sarifs'
