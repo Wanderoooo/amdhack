@@ -65,6 +65,8 @@ function App() {
     setData(tempData);
   };
 
+  const [commitHash, setCommitHash] = useState('');
+
   const addFullCard = (title, tags, task, desc, assignee, bid) => {
     // bid is boardId
     const index = data.findIndex((item) => item.id === bid);
