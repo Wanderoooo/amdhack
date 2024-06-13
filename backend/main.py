@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-cred = credentials.Certificate('path/to/your/serviceAccountKey.json')
+cred = credentials.Certificate('C:\\Users\\winstang\\amdhack-58ad0-firebase-adminsdk-dpnss-89da1a3d8c.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 

@@ -127,11 +127,18 @@ function App() {
     setData(tempData);
   };
 
-  const removeBoard = (bid) => {
-    const tempData = [...data];
-    const index = data.findIndex((item) => item.id === bid);
-    tempData.splice(index, 1);
-    setData(tempData);
+  const removeBoard = async (commitHash, bid) => {
+    try {
+      const response = await axios.delete(`http://127.0.0.1:8000/boards/${commitHash}/${bid}`);
+      console.log(response.data.message);
+
+      const tempData = [...data];
+      const index = data.findIndex((item) => item.id === bid);
+      tempData.splice(index, 1);
+      setData(tempData);
+    } catch (error) {
+      console.error("Error removing board:", error);
+    }
   };
 
   const onDragEnd = (result) => {
