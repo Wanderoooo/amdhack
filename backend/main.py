@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 import firebase_admin
@@ -12,7 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3001"],
     allow_credentials = True,
     allow_methods = ["*"],
     allow_headers = ["*"]
@@ -26,10 +26,12 @@ async def root():
 async def get_commit_hashes():
     try: 
         commit_ref = db.collection('commits')
-        commit_doc = commit_ref.get()
+        commit_doc = commit_ref.stream()
 
-        commit_dic = commit_doc.to_array()
-
+        commit_dic = []
+        for doc in commit_doc:
+            commit_dic.append({**doc.to_dict(), 'id':doc.id})
+        print(commit_dic)
         return {"commits": commit_dic}
     
     except Exception as e:
@@ -53,6 +55,7 @@ async def get_issue_data(commit_hash: str):
             deps_data = []
             for dep in deps_docs:
                 for dep_doc in dep.stream():
+
                     dep_data = dep_doc.to_dict()
                     deps_data.append(dep_data)
 

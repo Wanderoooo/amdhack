@@ -82,20 +82,18 @@ function App() {
     setData(tempData);
   }
 
-  const [commitHash, setCommitHash] = useState('');
-
   useEffect(() => {
     const getCommitHashes = async() => {
         try {
         const response = await axios.get(`http://127.0.0.1:8000/get_commits`);
-        const { hashes } = response.data;
+        const { commits } = response.data;
 
         // if there is no board yet, make a board
         const boardId = 0;
         // add cards to board with title = commit hash
-        hashes.forEach(hash => {
+        commits.forEach(hash => {
           addCard(
-            hash, // title
+            hash.id, // title
             boardId
           )
         })
@@ -103,35 +101,36 @@ function App() {
         console.error('Error fetching commit hashes:', error);
       }
     }
+    getCommitHashes();
   }, []);
 
-  useEffect(() => {
-    const fetchIssues = async (commitHash) => {
-      try {
-        const response = await axios.get(`http://127.0.0.1:8000/commits/${commitHash}`);
-        const { issues } = response.data;
+  // useEffect(() => {
+  //   const fetchIssues = async (commitHash) => {
+  //     try {
+  //       const response = await axios.get(`http://127.0.0.1:8000/commits/${commitHash}`);
+  //       const { issues } = response.data;
 
-        for (const issueId in issues) {
-          const deps = issues[issueId];
-          deps.forEach(dep => {
-            addFullCard(
-              dep.name + " | Severity: " + String(dep.severity), // title
-              [],       // tags (adjust if there are tags in the data)
-              issueId,  // task (using issueId as task)
-              dep.description, // add date
-              '',       // assignee (adjust if there is an assignee in the data)
-              dep.bid   // bid 
-            );
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching issues:', error);
-      }
-    };
+  //       for (const issueId in issues) {
+  //         const deps = issues[issueId];
+  //         deps.forEach(dep => {
+  //           addFullCard(
+  //             dep.name + " | Severity: " + String(dep.severity), // title
+  //             [],       // tags (adjust if there are tags in the data)
+  //             issueId,  // task (using issueId as task)
+  //             dep.description, // add date
+  //             '',       // assignee (adjust if there is an assignee in the data)
+  //             dep.bid   // bid 
+  //           );
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching issues:', error);
+  //     }
+  //   };
 
     // Call fetchIssues with the desired commit hash
-    fetchIssues(commitHash);
-  }, [commitHash]);
+  //   fetchIssues(commitHash);
+  // }, [commitHash]);
 
   const removeCard = (boardId, cardId) => {
     const index = data.findIndex((item) => item.id === boardId);
