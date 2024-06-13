@@ -64,6 +64,21 @@ function App() {
     setData(tempData);
   };
 
+  const addFullCard = (title, tags, task, desc, assignee, bid) => {
+    // bid is boardId
+    const index = data.findIndex((item) => item.id === bid);
+    const tempData = [...data];
+    tempData[index].card.push({
+      id: uuidv4(),
+      title: title,
+      tags: tags,
+      task: task,
+      desc: desc,
+      assignee: assignee,
+    });
+    setData(tempData);
+  }
+
   const removeCard = (boardId, cardId) => {
     const index = data.findIndex((item) => item.id === boardId);
     const tempData = [...data];
