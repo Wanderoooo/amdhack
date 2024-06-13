@@ -5,6 +5,7 @@ from firebase_admin import firestore
 import json
 import os
 
+import re
 # Use a service account.
 cred = credentials.Certificate('C:\\Users\\winstang\\amdhack-58ad0-firebase-adminsdk-dpnss-89da1a3d8c.json')
 
@@ -30,17 +31,21 @@ def test():
         print(f"fhkjsdhfjsd")
 
 def read_sarif(path):
-    with open(path) as file:
+    with open(path, 'r') as file:
         data = json.load(file)
         return data
 
 def store_sarif(data):
-    for rule in data.get('rules', []):
+    pattern = re.compile(r'[^a-zA-Z0-9]')
+   
+    rules = data['runs'][0]['tool']['driver']['rules']
+    for rule in rules:
         name = rule.get('name')
+        name = re.sub(pattern, '', name)
         full_descr = rule.get('fullDescription', {}).get('text')
         severity = rule.get('properties', {}).get('security-severity')
         print(severity)
-        doc_ref = db.collection('rules').document(name)
+        doc_ref = db.collection('issues').document(name)
         vulnerability_data = {
             'name': name,
             'description': full_descr,
@@ -59,6 +64,6 @@ def process_files(folder_path):
         store_sarif(data)
 
 if __name__ == "__main__":
-    folder_path = 'C:\\Users\\winstang\\Downloads\\amdhack_sarifs'
+    folder_path = 'C:\\amdhack_sarifs'
     process_files(folder_path)
     test()
