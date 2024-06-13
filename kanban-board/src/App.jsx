@@ -11,6 +11,7 @@ import "../bootstrap.css";
 import LeaderBoard from "./Components/LeaderBoard/LeaderBoard";
 import Wave from 'react-wavify'
 import logo from './vulsquash2.png'
+import axios from 'axios'
 
 function App() {
   const [data, setData] = useState(
@@ -78,6 +79,34 @@ function App() {
     });
     setData(tempData);
   }
+
+  useEffect(() => {
+    const fetchIssues = async (commitHash) => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/commits/${commitHash}`);
+        const { issues } = response.data;
+
+        for (const issueId in issues) {
+          const deps = issues[issueId];
+          deps.forEach(dep => {
+            addFullCard(
+              dep.name + " | Severity: " + String(dep.severity), // title
+              [],       // tags (adjust if there are tags in the data)
+              issueId,  // task (using issueId as task)
+              dep.description, // add date
+              '',       // assignee (adjust if there is an assignee in the data)
+              dep.bid   // bid (board ID)
+            );
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching issues:', error);
+      }
+    };
+
+    // Call fetchIssues with the desired commit hash
+    fetchIssues(commitHash);
+  }, [commitHash]);
 
   const removeCard = (boardId, cardId) => {
     const index = data.findIndex((item) => item.id === boardId);
