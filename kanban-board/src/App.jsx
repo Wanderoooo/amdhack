@@ -95,7 +95,7 @@ function App() {
               issueId,  // task (using issueId as task)
               dep.description, // add date
               '',       // assignee (adjust if there is an assignee in the data)
-              dep.bid   // bid (board ID)
+              dep.bid   // bid 
             );
           });
         }

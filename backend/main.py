@@ -44,6 +44,50 @@ async def update_user_stats():
     #get users current points, calculate points after fix, mark issue as fixed if determined as fixed
     #points ideas: extra points for fixing issues faster, first fix, daily streak 
     return {"message": "Hel"}
+
+import firebase_admin
+from firebase_admin import credentials, firestore
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+# Initialize Firebase Admin
+cred = credentials.Certificate('path/to/your/serviceAccountKey.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+app = FastAPI()
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
+@app.delete("/boards/{commit_hash}/{board_id}")
+async def remove_board(commit_hash: str,board_id: str):
+    try:
+        commit_ref = db.collection('commits').document(commit_hash)
+        commit_doc = commit_ref.get()
+        if not commit_doc.exists:
+            raise HTTPException(status_code=404, detail="Commit not found")
+
+        deps_ref = commit_ref.collections()
+        for dep in deps_ref:
+            dep_docs = dep.stream()
+            for dep_doc in dep_docs:
+                dep_data = dep_doc.to_dict()
+                if dep_data.get('biD') == board_id:
+                    # Delete the matching issue document
+                    dep_doc.reference.delete()
+                    return {"message": "Issue board removed successfully"}
+
+        raise HTTPException(status_code=404, detail="Board ID not found within the specified commit hash")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/leaderboard")
 async def show_leadeboard():
     # update leaderboard
