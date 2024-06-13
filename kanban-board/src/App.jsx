@@ -83,6 +83,27 @@ function App() {
   }
 
   useEffect(() => {
+    const getCommitHashes = async() => {
+        try {
+        const response = await axios.get(`http://127.0.0.1:8000/get_commits`);
+        const { hashes } = response.data;
+
+        // if there is no board yet, make a board
+        const boardId = 0;
+        // add cards to board with title = commit hash
+        hashes.forEach(hash => {
+          addCard(
+            hash, // title
+            boardId
+          )
+        })
+      } catch (error) {
+        console.error('Error fetching commit hashes:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchIssues = async (commitHash) => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/commits/${commitHash}`);

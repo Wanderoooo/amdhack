@@ -22,6 +22,19 @@ app.add_middleware(
 async def root():
     return {"message": "Hello World"}
 
+@app.get('/get_commits')
+async def get_commit_hashes():
+    try: 
+        commit_ref = db.collection('commits')
+        commit_doc = commit_ref.get()
+
+        commit_dic = commit_doc.to_array()
+
+        return {"commits": commit_dic}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/commits/{commit_hash}")
 async def get_issue_data(commit_hash: str):
     try: 
